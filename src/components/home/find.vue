@@ -124,7 +124,7 @@
                              <span class="iconfont">&#xe608;</span>
                              4.2万
                          </div>
-                         <img src="@/assets/find/li1.jpg"  alt="">
+                         <img src="@/assets/find/li1.jpg" alt="">
                          <span class="play iconfont">&#xe6a4;</span>
                      </div>
                      <p>这首歌非常好听，请大家点开看看</p>
@@ -179,7 +179,7 @@
                              <span class="iconfont">&#xe608;</span>
                              4.2万
                          </div>
-                         <img  @click="play" src="@/assets/find/li6.jpg" alt="">
+                         <img src="@/assets/find/li6.jpg" alt="">
                          <span class="play iconfont">&#xe6a4;</span>
                      </div>
                      <p>这首歌非常好听，请大家点开看看</p>
@@ -201,9 +201,7 @@ export default {
 
     },
     methods: {
-        play(){
-            this.$router.push('/video')
-        }
+
     },
     components: {
 

@@ -45,7 +45,6 @@ export default {
 <style scoped>
 .friend-box{
     width: 100%;
-   
 }
 .friend-item{
     position: relative;

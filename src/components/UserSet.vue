@@ -145,7 +145,36 @@ export default {
   },
   methods:{
     turn(){
-      this.$router.push('/');
+      //判断是否登录
+      var uid=sessionStorage.getItem("uid");
+      if(uid!==null){
+       this.$messagebox({
+          title:"退出",
+          message:"确定到退出登录吗?",
+          showConfirmButton:true,
+          showCancelButton:true,
+        })
+        .then(result=>{
+          if(result=='confirm'){
+            var url="signout";
+            this.axios.get(url)
+            .then(result=>{
+              //console.log(result);
+              sessionStorage.removeItem("uid");
+              this.$router.push('/');
+            })        
+          }else{
+            return;
+          }
+        })
+      }else{
+        var url="signout";
+        this.axios.get(url)
+          .then(result=>{
+            sessionStorage.removeItem("uid");
+            this.$router.push('/');
+        })    
+      }
     }
   }
 }
@@ -161,7 +190,7 @@ export default {
 
 }
 .user_main{
-  width:75%;
+  width:80%;
   height:100%;
   background-color: #f5f5f5;
   position: relative;
@@ -240,12 +269,8 @@ export default {
   font-size: 12px;
 }
 .nav{
-  width:100%;
   padding-top:50px;
   box-sizing: border-box;
-  display: flex;
-  justify-content: center;
- 
 }
 .nav ul {
   width: 100%;
@@ -254,12 +279,12 @@ export default {
   align-items: center;
 }
 .nav ul li{
-  width:25%;
+  width:70px;
   height: 55px;
-  padding:0 5px;
+  padding:0 10px;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   align-self: center;
 }
@@ -309,7 +334,7 @@ export default {
   box-sizing: border-box;
   background-color:rgba(255,255,255,1);
   transition: all .3s linear;
-
+  margin-bottom: 48px;
 }
 .foot_fixed ul {
   height: 100%;

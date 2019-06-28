@@ -3,12 +3,12 @@
       <div class="header_nav">
         <header class="header">
             <div class="body_cell"> 
-                <span class="body_self iconfont">&#xe79b;</span>
-                <div class="body_name">本地音乐</div>
+                <span class="body_self iconfont" @click="goback">&#xe79b;</span>
+                <div class="body_name">{{str}}</div>
             </div>
         </header>
         <nav class="nav">
-            <ul>
+            <ul @click="activedli">
                 <li class="active">单曲</li>
                 <li>歌手</li>
                 <li>专辑</li>
@@ -19,27 +19,18 @@
      
       <div class="list_main">
           <div class="playkey">
-           <div class="goall">
+           <div class="goall" @click="playall()">
             <span class="play iconfont">&#xe6f6;</span>
-            <div class="all">播放全部 <span>(52)</span> </div>
+            <div class="all" >播放全部 <span>({{selfmusic.length}})</span> </div>
            </div>
           </div>
-          <ul>
-              <li>
+          <ul>              
+              <li v-for=" (item,i) of musics" :key="i">
                 <div class="left">
-                    <span class="mname">夜空中最亮的星</span>
-                    <span class="aut">逃跑计划</span>
+                    <span class="mname">{{item.mname}}</span>
+                    <span class="aut">{{item.author}}</span>
                 </div>
-                <div class="right">
-                    <span class="play iconfont">&#xe6f6;</span>
-                </div>
-              </li>
-              <li v-for="i of 50" :key="i">
-                <div class="left">
-                    <span class="mname">夜空中最亮的星</span>
-                    <span class="aut">逃跑计划</span>
-                </div>
-                <div class="right">
+                <div class="right" @click="playone(i)">
                     <span class="play iconfont">&#xe6f6;</span>
                 </div>
               </li>
@@ -49,17 +40,63 @@
 </template>
 
 <script>
+
 export default {
+    name:"Playlist",
     data() {
         return {
-
+            str:"",
+            musics:{},
+            selfmusic:{},
+            musicsrc:[]
         };
     },
     watch: {
 
     },
+    created(){
+        this.str=sessionStorage.getItem("liststr");
+        //console.log(this.$route);
+        this.musicself()
+    },
     methods: {
-
+        goback(){
+            this.$router.push("/my")
+        },
+        activedli(e){
+            var lis=document.querySelectorAll('nav.nav ul li');         
+            //console.log(lis);
+            //console.log(e.target);
+            for(var li of lis){                              
+                if(e.target==li){
+                    for(var l of lis){ l.className=" ";}                  
+                    li.className="active";
+                }
+            }
+        },
+        musicself(){
+            //加载音乐列表数据
+            var url="musicself";
+            //var params={mid:1};           
+            this.axios.get(url)
+            .then(result=>{
+                var {musics,selfmusic}=result.data.data;
+                this.musics=musics;
+                this.selfmusic=selfmusic;
+                console.log(this.musics);
+                for (var item of musics){
+                    this.musicsrc.push(item.src)
+                }
+            })
+            .catch(err=>console.log(err))
+        },
+        playall(){
+            this.$router.push({name:"video",params:{musicsrc:this.musicsrc,index:0}})
+        },
+        playone(i){
+            //console.log(i)
+             this.$router.push({name:"video",params:{musicsrc:this.musicsrc,index:i}})
+        }
     },
     components: {
 
@@ -124,6 +161,7 @@ export default {
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid #ddd;
+    list-style: none;
 }
 .nav ul li{
     color:#000;

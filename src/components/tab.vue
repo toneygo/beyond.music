@@ -5,7 +5,12 @@
             <span class="iconfont">&#xe607;不一样的音乐</span>
             <span class="iconfont">&#xe611;</span>
     </div>
-</div>
+    <div class="bottom-bar">
+          <div class="bottom-bar-item"><router-link to="/find">发现</router-link></div>
+          <div class="bottom-bar-item"><router-link to="/friend">热门消息</router-link> </div>
+          <div class="bottom-bar-item"><router-link to="/my">我的</router-link> </div>
+      </div>
+    </div>
     
 </template>
 <script>
@@ -29,7 +34,7 @@ export default {
             html.style.overflowY="hidden";
             user.onclick=(e)=>{ 
                 this.index++;
-                console.log(this.index);
+                //console.log(this.index);
                 if(this.index>=2){
             var user=document.getElementsByClassName("user_bg")[0];
             var html=document.getElementsByTagName("html")[0];

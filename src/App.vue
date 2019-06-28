@@ -11,9 +11,18 @@ import setuser from './components/UserSet'
 export default {
   name:"App",
     data() {
-       
+         return {
+        //     transitionName:"fold-left"
+        };
     },
     watch: {
+        // '$route'(to,from){
+        //   console.log(from);
+        //   console.log(to);
+        //   const routerDeep=["/","/friend","/my"];
+        //   const toDepth = routerDeep.indexOf(to.path);
+        //   const fromDepth = routerDeep.indexOf(from.path);
+        //   this.transitionName = toDepth > fromDepth ? 'fold-left' : 'fold-right';}
         
         
     },

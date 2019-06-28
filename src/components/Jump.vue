@@ -33,6 +33,18 @@ export default {
         }
     },
     methods:{
+       signin() {
+            //获取手机和密码登录,登录请求函数
+            var url="signin";
+            var dataparams=`phone=${this.inp}&upwd=${this.upwd}`;
+            this.axios.post(url,dataparams).then(result=>{
+                 //console.log(result);
+                 var uid=result.data.data.uid;   
+                 sessionStorage.setItem("uid",uid);
+                 this.$router.push("/home");
+                 //console.log(sessionStorage.getItem("uid"));
+            })
+        },
         back(){
              this.$router.push("/login")
         },
@@ -42,24 +54,50 @@ export default {
         next(){
             var pho=/^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/;
             if(pho.test(this.inp)){
-                if(this.upwd!=""){
-                    this.$router.push("/home")
-                }else{
-                        this.$toast({
-                        message:"密码不能为空",
-                        duration:1000,
-                        // iconClass:"iconfont icon-cuowu"
-                    })
-                }
-                
+                //验证手机号是否注册
+                var url="getphone";
+                var params={phone:this.inp};
+                this.axios.get(url,{params})
+                .then(result=>{
+                    var data=result.data;
+                    if(data.code===0){
+                        this.$messagebox({
+                            title:"注册",
+                            message:"确定要注册账号?",
+                            showConfirmButton:true,
+                            showCancelButton:true,                           
+                        }).then(result=>{                          
+                           if(result==="cancel"){
+                               //不同意跳回
+                               this.$router.push("/login")
+                           }else{
+                            if(this.upwd!=""){
+                                //密码不为空注册账号
+                                var url="reg";
+                                var dataparams=`phone=${this.inp}&upwd=${this.upwd}`;
+                                this.axios.post(url,dataparams).then(result=>{       //跳回登录页面                         
+                                    this.$router.push("/jump");                              
+                                }).then(()=>{
+                                    this.next()
+                                })                    
+                            }else{
+                                this.$toast({
+                                message:"密码不能为空",
+                                duration:1000,                      
+                                })
+                            }  
+                           }
+                        })
+                    }else{
+                        this.signin();
+                    }
+                })
             }else{
                 this.$toast({
                     message:"手机号格式错误",
                     duration:1000,
-                    // iconClass:"iconfont icon-cuowu"
                 })
-            }
-            
+            }           
         }
     },
     directives:{
@@ -94,8 +132,8 @@ export default {
         padding-left:0!important;
     }
     .inp{    
-        margin:0 10px 5px 10px; 
-        border-bottom:1.5px solid #ddd; 
+        margin:0 10px; 
+        border-bottom:1px solid #ddd; 
         position: relative;
         display: flex;
         flex-wrap: nowrap;
@@ -108,8 +146,8 @@ export default {
     }
     .inp2{
         padding:0px 30px;
-        margin:0px 10px 5px 10px;
-        border-bottom: 2px solid #ddd!important;
+        margin:0px 10px;
+        border-bottom: 1px solid #ddd;
     }
     .btn1{
         opacity: 0.5;

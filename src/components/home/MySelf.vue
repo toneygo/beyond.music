@@ -41,52 +41,116 @@
         <li>
           <div class="body_cell"> 
             <span class="body_self iconfont">&#xe697;</span>
-            <div class="body_name">本地音乐( <span>52</span> )</div>
+            <div class="body_name" @click="tolocal('音乐列表')">音乐列表( <span>{{musics.length}}</span> )</div>
           </div>
         </li>
         <li>
           <div class="body_cell"> 
             <span class="body_self iconfont">&#xe66c;</span>
-            <div class="body_name">最近播放( <span>62</span> )</div>
+            <div class="body_name" @click="tolocal('最近播放')">最近播放( <span>{{musics.length}}</span> )</div>
           </div>
         </li>
         <li>
           <div class="body_cell"> 
             <span class="body_self iconfont">&#xe7ef;</span>
-            <div class="body_name">下载管理( <span>2</span> )</div>
+            <div class="body_name" @click="tolocal('下载管理')">下载管理( <span>{{lnum}}</span> )</div>
           </div>
         </li>
         <li>
           <div class="body_cell"> 
             <span class="body_self iconfont">&#xe609;</span>
-            <div class="body_name">我的分享( <span>6</span> )</div>
+            <div class="body_name" @click="tolocal('我的分享')">我的分享( <span>{{snum}}</span> )</div>
           </div>
         </li>
         <li>
           <div class="body_cell"> 
             <span class="body_self iconfont">&#xe66e;</span>
-            <div class="body_name">经典私藏<span>(12)</span></div>
+            <div class="body_name" @click="tolocal('经典私藏')">经典私藏<span>({{inum}})</span></div>
           </div>
         </li>
       </ul>
     </div>
     <div class="myself_create_music">
-      <h4>创建的歌单 <span>(2)</span> </h4>
+      <h4>创建的歌单 <span>(0)</span> </h4>
     </div>
   </div>
 </template>
 <script>
+
 export default {
   data(){
-    return{
-
+    return {
+      musics:[],
+      snum:0,
+      lnum:0,
+      inum:0
     }
-  }
+  },
+  created(){
+    this.loaddata()
+  },
+  watch:{
+    
+  },
+  methods:{
+    tolocal(str){
+      var uid=sessionStorage.getItem("uid");
+      //console.log(uid);
+      if(uid!==null){
+         this.$router.push("/PlayList");
+         sessionStorage.removeItem("liststr");
+         sessionStorage.setItem("liststr",str);
+      }else{
+        this.$messagebox({
+          title:"请登录",
+          message:"确定到登录页面吗?",
+          showConfirmButton:true,
+          showCancelButton:true,
+        })
+        .then(result=>{
+          if(result=='confirm'){
+            this.$router.push("/jump")
+          }else{
+            return;
+          }
+        })
+      }
+    },
+    loaddata(){
+      //加载音乐列表数据
+        var url="musicself";
+        //var params={mid:1};           
+        this.axios.get(url)
+        .then(result=>{
+          var data=result.data.data.selfmusic;
+          this.musics=data;
+          //console.log(data);
+          var num1=0,num2=0,num3=0;
+            for (var m of data){
+              if(m.share==1){
+                num1++;
+              };
+              if(m.loaddown==1){
+                num2++;
+              };
+              if(m.islove==1){
+                num3++;
+              };
+            };
+           this.snum=num1;
+           this.lnum=num2;
+           this.inum=num3;  
+        })
+        .catch(err=>console.log(err))
+    }
+  },
+  
 }
+
 </script>
 <style scoped>
 .myself{
-  padding:50px 0;
+  padding-top:50px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -95,6 +159,9 @@ export default {
   width: 100%;
   overflow-x: scroll;
 }
+.myself_header_hot::-webkit-scrollbar {
+    display: none;
+  }
 .myself_header_hot ul{
   display: flex;
   justify-content: space-around;
