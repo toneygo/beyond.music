@@ -38,11 +38,18 @@ export default {
             var url="signin";
             var dataparams=`phone=${this.inp}&upwd=${this.upwd}`;
             this.axios.post(url,dataparams).then(result=>{
-                 //console.log(result);
+                //  console.log(result.data.code);
+                if(result.data.code==1){
                  var uid=result.data.data.uid;   
                  sessionStorage.setItem("uid",uid);
                  this.$router.push("/home");
-                 //console.log(sessionStorage.getItem("uid"));
+                //  console.log(sessionStorage.getItem("uid"));
+                }else{
+                     this.$toast({
+                    message:"密码错误",
+                    duration:1000 
+                 })    
+                }
             })
         },
         back(){

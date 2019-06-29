@@ -3,11 +3,18 @@
     <div class="user_main">
       <div class="main_header"> 
         <div class="avatar">
-          <span>上传头像</span>
+          <span>
+            <img :src="'http://127.0.0.1:3000/'+avatarUrl" alt="">
+          </span>
+          <div class="setting_right" @click.stop="uploadavatar">
+                <div class="caption">更改头像</div>
+            </div>
+          <input type="file" name="avatar" ref="fileInput" accept="image/*" @change="uploadFile" class="hiddenInput"/>
         </div>
         <div class="name_vip">
-          <span class="use_name">汝之爱</span>
-          <span class="vip">vip</span>
+          <span class="use_name">{{msg.uname}} hello!</span>
+          <span class="vip" v-if="showVip">vip</span>
+          <span class="novip" v-else-if="showVip==false">vip</span>
         </div>
       </div>
       <div class="main_body">
@@ -141,9 +148,52 @@
 <script>
 export default {
   data(){
-    return{}
+    return{
+      msg:{},
+      showVip:false,
+      avatarUrl:"img/avatar/2.png"
+    }
+  },
+  created(){
+    this.getMsg()
   },
   methods:{
+    // 更改头像 
+     uploadavatar: function () {
+        this.$el.querySelector('.hiddenInput').click()
+           },
+        uploadFile: function (event) {
+        var formData=new FormData()
+        formData.append('file',event.target.files[0])
+        // console.log(event.target.files[0]);
+        // var params={imgData:formData}
+        if (event.target.files[0]!==undefined){
+            this.axios.post('uploadAvatar',formData,{headers:{'Content-Type':'multipart/form-data'}}).then(res=>{
+                this.avatarUrl=res.data+`?t=${Math.random()}`
+                // console.log(res)
+                this.avatarUrl=res.data;
+            })
+         }
+        // this.getMsg();
+        },
+    //获取用户信息
+    getMsg(){
+      var uid=sessionStorage.getItem("uid");
+      if(uid!==null){
+        var url="usermsg";
+        this.axios.get(url).then(result=>{
+          var data=result.data.data[0]
+          this.msg=data;
+          this.avatarUrl=data.avatar;
+          // console.log(data);
+          if(this.msg.vip==1){
+            this.showVip=true;
+          }else{
+            this.showVip=false;
+          }
+        })
+      }
+    },
     turn(){
       //判断是否登录
       var uid=sessionStorage.getItem("uid");
@@ -180,6 +230,14 @@ export default {
 }
 </script>
 <style scoped>
+.caption{
+  color:#666;
+  font-size:14px;
+  margin:5px 0 0 14px;
+}
+.hiddenInput{
+  display: none;
+}
 .user_bg{
   width:0%;
   height:100%;
@@ -211,12 +269,17 @@ export default {
   width: 80px;
   height:80px;
   border-radius: 50%;
-  border:1px solid transparent;
-  background-color:#999;
+  /* border:1px solid transparent; */
+  background:url("/img/avatar/1.png") no-repeat center center;
+  background-size:contain; 
   text-align: center;
   line-height: 120px;
   color:#fff;
   font-size: 12px;
+  overflow: hidden;
+}
+.avatar span img{
+  width:100%;
 }
 .name_vip{
   padding:10px 30px 20px 30px;
